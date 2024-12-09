@@ -60,7 +60,6 @@ struct PostRequestBuilder<Body : Model> : RequestBuilder {
         self.params = params
         self.body = body
         self.headers["Content-Type"] = "application/json"
-        self.headers["Accept"] = "application/json"
         
         for key in additionalHeaders.keys {
             self.headers[key] = additionalHeaders[key]
