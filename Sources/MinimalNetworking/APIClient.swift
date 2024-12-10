@@ -30,8 +30,9 @@ public final class ApiClient: GenericAPI, Sendable {
         guard let httpResponse = response as? HTTPURLResponse else {
             return .failure(.unknownResponse)
         }
-        
-        guard httpResponse.statusCode == 200 else {
+        let range = 200...226
+        if !range.contains(httpResponse.statusCode),
+            httpResponse.statusCode != 401 {
             if httpResponse.statusCode == 401 {
                 return .failure(.expiredToken)
             }

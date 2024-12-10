@@ -10,8 +10,15 @@ public protocol RequestBuilder {
     var path: String { get set }
     var params: [URLQueryItem]? { get set }
     var headers: [String : String] { get set }
+    var data: Data? { get set }
     func encodeRequestBody() -> Data?
     func toURLRequest() -> URLRequest
+}
+
+public extension RequestBuilder {
+    var data: Data? {
+        nil
+    }
 }
 
 public extension RequestBuilder {
@@ -38,6 +45,7 @@ struct BasicRequestBuilder : RequestBuilder {
     var path: String
     var params: [URLQueryItem]?
     var headers: [String : String] = [:]
+    var data: Data?
 }
 
 struct PostRequestBuilder<Body : Model> : RequestBuilder {
@@ -47,19 +55,22 @@ struct PostRequestBuilder<Body : Model> : RequestBuilder {
     public var params: [URLQueryItem]?
     public var headers: [String : String] = [:]
     public var body: Body?
+    public var data: Data?
 
     public init(method: HTTPMethod = .post,
                 baseURL: URL,
                 path: String,
                 additionalHeaders: [String: String] = [:],
                 params: [URLQueryItem]? = nil,
-                body: Body?) {
+                body: Body?,
+                data: Data? = nil) {
         self.method = method
         self.baseURL = baseURL
         self.path = path
         self.params = params
         self.body = body
         self.headers["Content-Type"] = "application/json"
+        self.data = data
         
         for key in additionalHeaders.keys {
             self.headers[key] = additionalHeaders[key]
@@ -67,6 +78,7 @@ struct PostRequestBuilder<Body : Model> : RequestBuilder {
     }
 
     public func encodeRequestBody() -> Data? {
+        if let data { return data }
         guard let body = body else { return nil }
         do {
             let encoder = Body.encoder
@@ -85,6 +97,7 @@ struct DeleteRequestBuilder<Body : Model> : RequestBuilder {
     public var params: [URLQueryItem]?
     public var headers: [String : String] = [:]
     public var body: Body?
+    public var data: Data?
 
     public init(method: HTTPMethod = .delete,
                 baseURL: URL,

@@ -34,13 +34,15 @@ public struct Request {
                                           path: String,
                                           additionalHeaders: [String: String] = [:],
                                           params: [URLQueryItem]? = nil,
-                                          body: Body?) -> Request {
+                                          body: Body?,
+                                          data: Data?) -> Request {
         let builder = PostRequestBuilder(method: method,
                                          baseURL: baseURL,
                                          path: path,
                                          additionalHeaders: additionalHeaders,
                                          params: params,
-                                         body: body)
+                                         body: body,
+                                         data: data)
         return Request(builder: builder)
     }
     
